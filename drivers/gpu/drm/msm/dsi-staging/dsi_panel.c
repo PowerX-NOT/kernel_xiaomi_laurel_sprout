@@ -681,6 +681,16 @@ error:
 	return rc;
 }
 
+static u32 dsi_panel_get_backlight(struct dsi_panel *panel)
+{
+	u32 bl_level = panel->bl_config.bl_level;
+
+	if (panel->doze_enabled)
+		bl_level = panel->bl_config.bl_doze_lbm;
+
+	return bl_level;
+}
+
 static int __dsi_panel_send(struct dsi_panel *panel, enum dsi_cmd_set_type type,
 			    const char *name)
 {
