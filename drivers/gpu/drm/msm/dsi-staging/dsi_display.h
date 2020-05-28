@@ -274,6 +274,8 @@ struct dsi_display {
 	struct work_struct fifo_overflow_work;
 	struct work_struct lp_rx_timeout_work;
 
+	bool fod_ui;
+
 	/* firmware panel data */
 	const struct firmware *fw;
 	void *parser;
