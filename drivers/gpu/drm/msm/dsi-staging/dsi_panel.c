@@ -2378,6 +2378,70 @@ error:
 	return rc;
 }
 
+static int dsi_panel_parse_dim_lut(struct dsi_panel *panel,
+				   struct dsi_parser_utils *utils,
+				   struct brightness_alpha **plut,
+				   u32 *pcount, const char *lut_name)
+{
+	struct brightness_alpha *lut = NULL;
+	u32 *array = NULL;
+	int count = 0;
+	int len;
+	int rc;
+	int i;
+
+	len = utils->count_u32_elems(utils->data, lut_name);
+	if (len <= 0 || len % 2) {
+		pr_err("[%s] Invalid number of elements, rc=%d\n",
+		       panel->name, rc);
+		rc = -EINVAL;
+		goto err;
+	}
+
+	array = kcalloc(len, sizeof(u32), GFP_KERNEL);
+	if (!array) {
+		pr_err("[%s] Failed to allocate memory, rc=%d\n",
+		       panel->name, rc);
+		rc = -ENOMEM;
+		goto err;
+	}
+
+	rc = utils->read_u32_array(utils->data, lut_name, array, len);
+	if (rc) {
+		pr_err("[%s] Failed to read LUT, rc=%d\n",
+		       panel->name, rc);
+		goto err;
+	}
+
+	count = len / 2;
+	lut = kcalloc(count, sizeof(*lut), GFP_KERNEL);
+	if (!lut) {
+		rc = -ENOMEM;
+		goto err;
+	}
+
+	for (i = 0; i < count; i++) {
+		lut[i].brightness = array[i * 2];
+		lut[i].alpha = array[i * 2 + 1];
+	}
+
+err:
+	kfree(array);
+
+	*plut = lut;
+	*pcount = count;
+
+	return rc;
+}
+
+static int dsi_panel_parse_fod_dim_lut(struct dsi_panel *panel,
+				       struct dsi_parser_utils *utils)
+{
+	return dsi_panel_parse_dim_lut(panel, utils, &panel->fod_dim_lut,
+				       &panel->fod_dim_lut_count,
+				       "qcom,disp-fod-dim-lut");
+}
+
 static int dsi_panel_parse_bl_config(struct dsi_panel *panel)
 {
 	int rc = 0;
@@ -2479,6 +2543,10 @@ static int dsi_panel_parse_bl_config(struct dsi_panel *panel)
 		panel->bl_config.bl_doze_hbm = val;
 	else
 		pr_debug("set doze hbm backlight to 0\n");
+
+	rc = dsi_panel_parse_fod_dim_lut(panel, utils);
+	if (rc)
+		pr_err("[%s] failed to parse fod dim lut\n", panel->name);
 
 	if (panel->bl_config.type == DSI_BACKLIGHT_PWM) {
 		rc = dsi_panel_parse_bl_pwm_config(panel);
