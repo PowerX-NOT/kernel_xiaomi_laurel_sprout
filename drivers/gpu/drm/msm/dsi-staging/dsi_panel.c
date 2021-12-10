@@ -2503,6 +2503,14 @@ static int dsi_panel_parse_fod_dim_lut(struct dsi_panel *panel, struct dsi_parse
 return dsi_panel_parse_dim_lut(panel, utils, &panel->fod_dim_lut, &panel->fod_dim_lut_count, "qcom,disp-fod-dim-lut");
 }
 
+static int dsi_panel_parse_dc_dim_lut(struct dsi_panel *panel,
+				       struct dsi_parser_utils *utils)
+{
+	return dsi_panel_parse_dim_lut(panel, utils, &panel->dc_dim_lut,
+				       &panel->dc_dim_lut_count,
+				       "qcom,disp-dc-dim-lut");
+}
+
 static int dsi_panel_parse_bl_config(struct dsi_panel *panel)
 {
 	int rc = 0;
@@ -2608,12 +2616,16 @@ static int dsi_panel_parse_bl_config(struct dsi_panel *panel)
 		pr_err("[%s] failed to parse fod dim lut\n", panel->name);
 
 	panel->bl_config.bl_dc_thresh = 0;
-	rc = of_property_read_u32(of_node, "qcom,mdss-dsi-panel-dc-threshold",
+	rc = utils->read_u32(utils->data, "qcom,mdss-dsi-panel-dc-threshold",
 				  &val);
 	if (!rc)
 		panel->bl_config.bl_dc_thresh = val;
 	else
 		pr_err("[%s] dc-threshold unspecified\n", panel->name);
+
+	rc = dsi_panel_parse_dc_dim_lut(panel, utils);
+	if (rc)
+		pr_err("[%s failed to parse dc dim lut\n", panel->name);
 
 	if (panel->bl_config.type == DSI_BACKLIGHT_PWM) {
 		rc = dsi_panel_parse_bl_pwm_config(panel);
