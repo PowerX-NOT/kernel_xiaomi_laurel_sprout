@@ -681,6 +681,22 @@ error:
 	return rc;
 }
 
+static int __dsi_panel_send(struct dsi_panel *panel, enum dsi_cmd_set_type type,
+			    const char *name)
+{
+	int rc;
+
+	rc = dsi_panel_tx_cmd_set(panel, type);
+	if (rc)
+		pr_err("Failed to send %s cmd, rc=%d\n", name, rc);
+
+	return rc;
+}
+
+#define DSI_PANEL_SEND(PANEL, CMDSET)					\
+	__dsi_panel_send(PANEL, __PASTE(DSI_CMD_SET_,CMDSET),		\
+			 __stringify(CMDSET))
+
 int dsi_panel_set_backlight(struct dsi_panel *panel, u32 bl_lvl)
 {
 	int rc = 0;
@@ -1778,7 +1794,7 @@ const char *cmd_set_state_map[DSI_CMD_SET_MAX] = {
 	"qcom,mdss-dsi-qsync-on-commands-state",
 	"qcom,mdss-dsi-qsync-off-commands-state",
 	"qcom,mdss-dsi-doze-hbm-command-state",
-	"qcom,mdss-dsi-doze-lbm-command-state",	
+	"qcom,mdss-dsi-doze-lbm-command-state",
 };
 
 static int dsi_panel_get_cmd_pkt_count(const char *data, u32 length, u32 *cnt)
