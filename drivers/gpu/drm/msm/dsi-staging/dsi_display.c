@@ -7574,6 +7574,9 @@ int dsi_display_pre_kickoff(struct drm_connector *connector,
 	int rc = 0;
 	int i;
 
+	/* pass current dimming layer type to panel */
+	dsi_panel_update_dimlayer(display->panel, params->dim_layer_type);
+
 	/* check and setup MISR */
 	if (display->misr_enable)
 		_dsi_display_setup_misr(display);
