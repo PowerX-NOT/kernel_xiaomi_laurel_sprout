@@ -139,7 +139,8 @@ static void sde_encoder_phys_wb_set_qos_remap(
 	SDE_DEBUG("[qos_remap] wb:%d vbif:%d xin:%d rt:%d clone:%d\n",
 			qos_params.num,
 			qos_params.vbif_idx,
-			qos_params.xin_id, qos_params.client_type);
+			qos_params.xin_id, qos_params.client_type,
+			phys_enc->in_clone_mode);
 
 	sde_vbif_set_qos_remap(phys_enc->sde_kms, &qos_params);
 }
