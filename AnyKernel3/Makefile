@@ -1,4 +1,4 @@
-NAME ?= sky
+NAME ?= ICE
 
 DATE := $(shell date "+%Y%m%d-%H%M")
 
@@ -29,4 +29,3 @@ clean:
 	@rm -vf Image*
 	@rm -vf dtbo*
 	@echo "Cleaned Up."
-

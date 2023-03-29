@@ -4,8 +4,8 @@ set -x
 
 export PATH=$HOME/proton-clang/bin:$PATH
 export ARCH=arm64
-export LINUX_COMPILE_BY="Skyblueborb"
-export LINUX_COMPILE_HOST="paczus"
+export LINUX_COMPILE_BY="PowerX-NOT"
+export LINUX_COMPILE_HOST="nobara"
 
 export USE_CCACHE=1
 export CCACHE_EXEC=$(command -v ccache)
