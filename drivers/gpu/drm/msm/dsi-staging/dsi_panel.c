@@ -3270,7 +3270,6 @@ struct dsi_panel *dsi_panel_get(struct device *parent,
 				const char *type,
 				int topology_override)
 {
-	const char *panel_physical_type;
 	struct dsi_panel *panel;
 	struct dsi_parser_utils *utils;
 	const char *panel_physical_type;
