@@ -2394,7 +2394,7 @@ error:
 }
 
 static int dsi_panel_parse_dim_lut(struct dsi_panel *panel,
-				   struct device_node *of_node,
+				   struct dsi_parser_utils *utils,
 				   struct brightness_alpha **plut,
 				   u32 *pcount, const char *lut_name)
 {
@@ -2405,7 +2405,7 @@ static int dsi_panel_parse_dim_lut(struct dsi_panel *panel,
 	int rc;
 	int i;
 
-	len = of_property_count_u32_elems(of_node, lut_name);
+	len = utils->count_u32_elems(utils->data, lut_name);
 	if (len <= 0 || len % 2) {
 		pr_err("[%s] Invalid number of elements, rc=%d\n",
 		       panel->name, rc);
@@ -2421,7 +2421,7 @@ static int dsi_panel_parse_dim_lut(struct dsi_panel *panel,
 		goto err;
 	}
 
-	rc = of_property_read_u32_array(of_node, lut_name, array, len);
+	rc = utils->read_u32_array(utils->data, lut_name, array, len);
 	if (rc) {
 		pr_err("[%s] Failed to read LUT, rc=%d\n",
 		       panel->name, rc);
@@ -2449,12 +2449,9 @@ err:
 	return rc;
 }
 
-static int dsi_panel_parse_fod_dim_lut(struct dsi_panel *panel,
-				       struct device_node *of_node)
+static int dsi_panel_parse_fod_dim_lut(struct dsi_panel *panel, struct dsi_parser_utils *utils)
 {
-	return dsi_panel_parse_dim_lut(panel, of_node, &panel->fod_dim_lut,
-				       &panel->fod_dim_lut_count,
-				       "qcom,disp-fod-dim-lut");
+return dsi_panel_parse_dim_lut(panel, utils, &panel->fod_dim_lut, &panel->fod_dim_lut_count, "qcom,disp-fod-dim-lut");
 }
 
 static int dsi_panel_parse_bl_config(struct dsi_panel *panel)
@@ -2557,7 +2554,7 @@ static int dsi_panel_parse_bl_config(struct dsi_panel *panel)
 	else
 		pr_debug("set doze hbm backlight to 0\n");
 
-	rc = dsi_panel_parse_fod_dim_lut(panel, of_node);
+	rc = dsi_panel_parse_fod_dim_lut(panel, utils);
 	if (rc)
 		pr_err("[%s] failed to parse fod dim lut\n", panel->name);
 
