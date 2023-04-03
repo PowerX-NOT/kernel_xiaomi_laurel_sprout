@@ -811,9 +811,16 @@ static int __dsi_panel_send(struct dsi_panel *panel, enum dsi_cmd_set_type type,
 
 static int dsi_panel_apply_hbm(struct dsi_panel *panel, bool enable)
 {
-	return enable ?
-		DSI_PANEL_SEND(panel, DISP_HBM_ON) :
-		DSI_PANEL_SEND(panel, DISP_HBM_OFF);
+	int ret;
+
+	if (enable) {
+		ret = DSI_PANEL_SEND(panel, DISP_HBM_ON);
+	} else {
+		ret = DSI_PANEL_SEND(panel, DISP_HBM_OFF);
+		dsi_panel_update_backlight(panel, panel->hw_bl_lvl);
+	}
+
+	return ret;
 }
 
 static int dsi_panel_update_doze(struct dsi_panel *panel)
