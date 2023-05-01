@@ -6696,13 +6696,14 @@ int dsi_display_get_dim_layer_alpha(void *dsi_display,
 
 	switch (type) {
 	case MSM_DIM_LAYER_FOD:
-		/* Enable dimming layer only if FOD is pressed */
-		rc = __dsi_panel_is_fod_pressed(display->panel) ? 1 : 0;
+		/* Fetch alpha value for dimming layer */
+		*alpha = dsi_panel_get_fod_dim_alpha(display->panel);
 
-		/* Retrieve alpha from panel if pressed */
-		if (rc)
-			*alpha = dsi_panel_get_fod_dim_alpha(display->panel);
-
+		/* Return 1 regardless of returned alpha value because
+		 * return value determine also type of global dimming
+		 * layer.
+		 */
+		rc = 1;
 		break;
 	case MSM_DIM_LAYER_TOP:
 		/* Enable dimming layer if DC dimming is enabled */
